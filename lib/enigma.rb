@@ -23,4 +23,8 @@ class Enigma
   def squared_date_array(squared_date)
     array = [] << squared_date
   end
+
+  def last_four_array_num(array)
+    offset = array.last(4)
+  end
 end
