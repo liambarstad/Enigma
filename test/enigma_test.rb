@@ -31,22 +31,20 @@ class EnigmaTest < Minitest::Test
     assert_equal (date_integer ** 2) , enigma.date_integer_squared(date_integer)
   end
 
-  def test_push_squared_date_into_array
+  def test_convert_to_string
     enigma = Enigma.new
     date_integer = Time.now.strftime('%m%d%y').to_i
     squared_date = (date_integer ** 2)
 
-    assert_equal [squared_date], enigma.squared_date_array(squared_date)
+    assert_equal squared_date.to_s, enigma.convert_to_string(squared_date)
   end
 
   def test_isolate_last_four_numbers_in_array
     enigma = Enigma.new
     date_integer = Time.now.strftime('%m%d%y').to_i
     squared_date = (date_integer ** 2)
-    array = [] << squared_date
+    offset = squared_date.to_s
 
-    assert_equal array.last(4), enigma.last_four_array_num(array)
-
-
+    assert_equal offset[-4..-1], enigma.get_offset(offset)
   end
 end
