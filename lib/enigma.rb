@@ -20,11 +20,11 @@ class Enigma
     squared_date = (date_integer ** 2)
   end
 
-  def squared_date_array(squared_date)
-    array = [] << squared_date
+  def convert_to_string(squared_date)
+    offset = squared_date.to_s
   end
 
-  def last_four_array_num(array)
-    offset = array.last(4)
+  def get_offset(offset)
+    offset_key = offset[-4..-1]
   end
 end
