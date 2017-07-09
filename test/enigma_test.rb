@@ -37,7 +37,15 @@ class EnigmaTest < Minitest::Test
     squared_date = (date_integer ** 2)
 
     assert_equal [squared_date], enigma.squared_date_array(squared_date)
+  end
 
+  def test_isolate_last_four_numbers_in_array
+    enigma = Enigma.new
+    date_integer = Time.now.strftime('%m%d%y').to_i
+    squared_date = (date_integer ** 2)
+    array = [] << squared_date
+
+    assert_equal array.last(4), enigma.last_four_array_num(array)
 
 
   end
