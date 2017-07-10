@@ -1,5 +1,5 @@
 class Encryptor
-  attr_accessor :key, :final_key
+  attr_accessor :key, :offset, :final_key
   def initialize
     @key = make_new_key
     @offset = "5632"
@@ -35,14 +35,32 @@ class Encryptor
    end
   #returns array of numbers after taking first (digits_to_read) digits, then removing the first digit, until
   #there are no more numbers left
+  def difference_of_chars(char1, char2)
+    (char1.to_i - char2.to_i).abs.to_s
+  end
 
+  def add_zero_if(str)
+    if str.to_i < 10 && str.length < 2
+      "0" + str
+    else
+      str
+    end
+  end
+
+  def add_two_zeros_if(str)
+    if str.to_i < 1
+      "00"
+    else
+      str
+    end
+  end
 
   def make_final_key
     key_array = get_values(@key, 2, 1)
     offset_array = get_values(@offset, 1, 1)
     final_string = ""
     for i in (0..3)
-      final_string += (key_array[i].to_i - offset_array[i].to_i).to_s
+      final_string += add_zero_if(add_two_zeros_if(difference_of_chars(key_array[i], offset_array[i])))
     end
     final_string
   end
