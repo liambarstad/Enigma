@@ -176,4 +176,33 @@ class EnigmaTest < Minitest::Test
     encryptor = Enigma.new
     encryptor.encrypt_file("./data/test_2.txt", "./data/test_1.txt")
   end
+
+  def test_decrypt_default
+    encryptor = Enigma.new
+    encryptor.final_key = "12233445"
+    message = "t|/:{"
+    decrypted_msg = encryptor.decrypt(message)
+    assert_equal "hello", decrypted_msg
+  end
+
+  def test_decrypt_new_key
+    encryptor = Enigma.new
+    message = "p|.4w"
+    encryptor.offset.date = "08/12/1996"
+    encryptor.offset.offset = "1998"
+    decrypted_msg = encryptor.decrypt(message, "12345")
+    assert_equal "hello", decrypted_msg
+  end
+
+  def test_decrypt_new_date_and_key
+    encryptor = Enigma.new
+    message = "p|.4w"
+    decrypted_msg = encryptor.decrypt(message, "12345", "08/12/1996")
+    assert_equal "hello", decrypted_msg
+  end
+
+  def test_decrypt_file
+    encryptor = Enigma.new
+    encryptor.decrypt_file("./data/test_1.txt", "./data/test_2.txt")
+  end
 end
