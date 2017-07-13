@@ -1,50 +1,179 @@
+require 'minitest'
 require 'minitest/autorun'
-require 'minitest/pride'
-require '../lib/enigma.rb'
-
-
+require './lib/enigma.rb'
 
 class EnigmaTest < Minitest::Test
 
-  def test_date
-    enigma = Enigma.new
-
-    assert_equal Time.now.strftime('%m/%d/%y'), enigma.date
+  def test_get_digits
+    encryptor = Enigma.new
+    assert_equal encryptor.key.key[0], encryptor.get_digits(encryptor.key.key, 1)
   end
 
-  def test_remove_backslash
-    enigma = Enigma.new
-
-    assert_equal Time.now.strftime('%m%d%y'), enigma.remove_backslash
+  def test_get_digits_2
+    encryptor = Enigma.new
+    assert_equal encryptor.key.key[0..1], encryptor.get_digits(encryptor.key.key, 2)
   end
 
-  def test_date_convert_integer
-    enigma = Enigma.new
-
-    assert_equal Time.now.strftime('%m%d%y').to_i, enigma.date_convert_integer
+  def test_get_values_test
+    encryptor = Enigma.new
+    arr = []
+    for i in 0..(encryptor.key.key.length - 1)
+      arr << encryptor.key.key[i]
+    end
+    assert_equal arr, encryptor.get_values(encryptor.key.key, 1, 1)
   end
 
-  def test_date_integer_squared
-    enigma = Enigma.new
-    date_integer = Time.now.strftime('%m%d%y').to_i
-
-    assert_equal (date_integer ** 2) , enigma.date_integer_squared(date_integer)
+  def test_get_values_2
+    encryptor = Enigma.new
+    arr = []
+    operating_key = "" + encryptor.key.key
+    until operating_key.length < 2
+      arr << operating_key[0..1]
+      operating_key.slice!(0)
+    end
+    assert_equal arr, encryptor.get_values(encryptor.key.key, 2, 1)
   end
 
-  def test_convert_to_string
-    enigma = Enigma.new
-    date_integer = Time.now.strftime('%m%d%y').to_i
-    squared_date = (date_integer ** 2)
-
-    assert_equal squared_date.to_s, enigma.convert_to_string(squared_date)
+  def test_difference_of_chars
+    encryptor = Enigma.new
+    assert_equal "2", encryptor.difference_of_chars("2", "4")
   end
 
-  def test_isolate_last_four_numbers_in_array
-    enigma = Enigma.new
-    date_integer = Time.now.strftime('%m%d%y').to_i
-    squared_date = (date_integer ** 2)
-    offset = squared_date.to_s
+  def test_dont_add_zero_if_greater_than_10
+    encryptor = Enigma.new
+    str = "12"
+    assert_equal "12", encryptor.add_zero_if(str)
+  end
 
-    assert_equal offset[-4..-1], enigma.get_offset(offset)
+  def test_add_zero_if_less_than_10
+    encryptor = Enigma.new
+    str = "9"
+    assert_equal "09", encryptor.add_zero_if(str)
+  end
+
+  def test_add_two_zeros_if
+    encryptor = Enigma.new
+    str = "0"
+    assert_equal "00", encryptor.add_two_zeros_if(str)
+  end
+
+  def test_make_final_key
+    encryptor = Enigma.new
+    key = "10000"
+    offset = "1000"
+    encryptor.final_key = encryptor.make_final_key(key, offset)
+    assert_equal "09000000", encryptor.final_key
+  end
+
+  def test_make_final_key_2
+    encryptor = Enigma.new
+    encryptor.key.key = "12345"
+    key = "12345"
+    encryptor.offset.offset = "1234"
+    offset = "1234"
+    encryptor.final_key = encryptor.make_final_key(key, offset)
+    assert_equal "11213141", encryptor.final_key
+  end
+
+  def test_make_new_writer_key_default
+    encryptor = Enigma.new
+    writer = encryptor.make_new_writer(encryptor.key.key, encryptor.offset.date)
+    assert_equal encryptor.key.key, writer.key
+  end
+
+  def test_make_new_writer_date_default
+    encryptor = Enigma.new
+    writer = encryptor.make_new_writer(encryptor.key.key, encryptor.offset.date)
+    assert_equal encryptor.offset.date, writer.date
+  end
+
+  def test_make_new_writer_final_key_default
+    encryptor = Enigma.new
+    writer = encryptor.make_new_writer(encryptor.key.key, encryptor.offset.date)
+    final_key = encryptor.get_values(encryptor.final_key, 2, 2)
+    assert_equal final_key, writer.final
+  end
+
+  def test_make_new_offset
+    encryptor = Enigma.new
+    new_offset = encryptor.make_new_offset("08/12/1996")
+    assert_equal "4016", new_offset.offset
+  end
+
+  def test_make_new_writer_key_user_inputted
+    encryptor = Enigma.new
+    key = "10000"
+    date = "08/12/1996"
+    writer = encryptor.make_new_writer(key, date)
+    assert_equal key, writer.key
+  end
+
+  def test_make_new_writer_date_user_inputted
+    encryptor = Enigma.new
+    key = "10000"
+    date = "08/12/1996"
+    writer = encryptor.make_new_writer(key, date)
+    assert_equal date, writer.date
+  end
+
+  def test_make_new_writer_final_key_user_inputted
+    encryptor = Enigma.new
+    key = "12345"
+    date = "08/12/1996"
+    writer = encryptor.make_new_writer(key, date)
+    assert_equal ["08", "23", "33", "39"], writer.final
+  end
+
+  def test_check_nil_key
+    encryptor = Enigma.new
+    nil_key = encryptor.check_key_if_nil(nil)
+    assert_equal encryptor.key.key, nil_key
+  end
+
+  def test_check_new_key
+    encryptor = Enigma.new
+    stuff_key = encryptor.check_key_if_nil("12345")
+    assert_equal "12345", stuff_key
+  end
+
+  def test_check_nil_date
+    encryptor = Enigma.new
+    nil_date = encryptor.check_date_if_nil(nil)
+    assert_equal encryptor.offset.date, nil_date
+  end
+
+  def test_check_new_date
+    encryptor = Enigma.new
+    stuff_date = encryptor.check_date_if_nil("08/12/1996")
+    assert_equal "08/12/1996", stuff_date
+  end
+
+  def test_encrypt_default
+    encryptor = Enigma.new
+    encryptor.final_key = "12233445"
+    message = "hello"
+    encrypted_msg = encryptor.encrypt(message)
+    assert_equal "t|/:{", encrypted_msg
+  end
+
+  def test_encrypt_key_user_inputted
+    encryptor = Enigma.new
+    message = "hello"
+    encryptor.offset.date = "08/12/1996"
+    encryptor.offset.offset = "1998"
+    encrypted_msg = encryptor.encrypt(message, "12345")
+    assert_equal "p|.4w", encrypted_msg
+  end
+
+  def test_encrypt_date_user_inputted
+    encryptor = Enigma.new
+    message = "hello"
+    encrypted_msg = encryptor.encrypt(message, "12345", "08/12/1996")
+    assert_equal "p|.4w", encrypted_msg
+  end
+
+  def test_encrypt_file
+    encryptor = Enigma.new
+    encryptor.encrypt_file("./data/test_2.txt", "./data/test_1.txt")
   end
 end
